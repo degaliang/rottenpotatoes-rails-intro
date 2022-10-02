@@ -9,8 +9,19 @@ class MoviesController < ApplicationController
     def index
       @all_ratings = Movie.all_ratings
       @ratings_to_show = Movie.all_ratings
-      logger.debug "params[:filter] is #{params[:filter]}"
+      
+      if params[:filter] == nil && params[:ratings] == nil
+        if session[:filter] != nil
+          params[:filter] = session[:filter]
+        end
+  
+        if session[:ratings] != nil
+          params[:ratings] = session[:ratings]
+        end
+      end
+
       if params[:ratings] != nil
+        session[:ratings] = params[:ratings]
         temp = Movie.all_ratings
         @ratings_to_show.each do |rating|
           if not params[:ratings].key?(rating)
@@ -24,6 +35,7 @@ class MoviesController < ApplicationController
       @title_css_class = "hilite"
       @date_css_class = "hilite"
       if params[:filter] != nil
+        session[:filter] = params[:filter]
         if params[:filter] == "title"
           @movies = @movies.order(:title)
           @title_css_class = "hilite bg-warning"
